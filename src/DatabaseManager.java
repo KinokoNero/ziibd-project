@@ -34,6 +34,19 @@ public class DatabaseManager {
         catch(SQLException exception) {System.out.println("Could not connect to database!\n" + exception.getMessage());}
         return null;
     }
+    public int getNextId(String tableName) {
+        try {
+            int id = 0;
+            String query = "select max(id) from ?";
+            PreparedStatement preparedStatement = this.connection.prepareStatement(query);
+            preparedStatement.setString(1, tableName);
+            ResultSet result = preparedStatement.executeQuery();
+            if (result != null) id = result.getInt(1) + 1;
+            return id;
+        }
+        catch(SQLException exception) {System.out.println("Could not complete database operation!");}
+        return 0;
+    }
 
     public DatabaseManager() {
         this.connection = getDatabaseConnection();
@@ -41,42 +54,51 @@ public class DatabaseManager {
 
     private Connection connection;
 
-    public void createNewPackage(double price, String address) { //TODO<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //creates
+    public void createNewClient(String firstName, String lastName, String phoneNumber, String email, String address) {
         try {
-            Statement statement = this.connection.createStatement();
-            ResultSet result = statement.executeQuery("count * from orders");
-            int id = result.getInt(1);
+            int id = getNextId("clients");
+            String query = "insert into clients values(?, ?, ?, ?, ?, ?)";
+            PreparedStatement preparedStatement = this.connection.prepareStatement(query);
 
-            statement.executeQuery(
-                    String.format(
-                            "insert into orders values(%d, %.2f, %s, %t, %s",
-                            id,
-                            price,
-                            address,
-                            new java.sql.Date(Calendar.getInstance().getTimeInMillis()),
-                            "Nowe"
-                    )
-            );
+            preparedStatement.setInt(1, id);
+            preparedStatement.setString(2, firstName);
+            preparedStatement.setString(3, lastName);
+            preparedStatement.setString(4, phoneNumber);
+            preparedStatement.setString(5, email);
+            preparedStatement.setString(6, address);
+
+            preparedStatement.execute();
         }
         catch(SQLException exception) {System.out.println("Could not complete database operation!");}
     }
+    public void createNewPackage(double weight, String contents) {
+        try {
+            int id = getNextId("packages");
+            String query = "insert into packages values(?, ?, ?)";
+            PreparedStatement preparedStatement = this.connection.prepareStatement(query);
 
+            preparedStatement.setInt(1, id);
+            preparedStatement.setDouble(2, weight);
+            preparedStatement.setString(3, contents);
+
+            preparedStatement.execute();
+        }
+        catch(SQLException exception) {System.out.println("Could not complete database operation!");}
+    }
     public void createNewOrder(double price, String address) {
         try {
-            Statement statement = this.connection.createStatement();
-            ResultSet result = statement.executeQuery("count * from orders");
-            int id = result.getInt(1);
+            int id = getNextId("orders");
+            String query = "insert into orders values(?, ?, ?, ?, ?)";
+            PreparedStatement preparedStatement = this.connection.prepareStatement(query);
 
-            statement.executeQuery(
-                    String.format(
-                            "insert into orders values(%d, %.2f, %s, %t, %s",
-                            id,
-                            price,
-                            address,
-                            new java.sql.Date(Calendar.getInstance().getTimeInMillis()),
-                            "Nowe"
-                    )
-            );
+            preparedStatement.setInt(1, id);
+            preparedStatement.setDouble(2, price);
+            preparedStatement.setString(3, address);
+            preparedStatement.setDate(4, new Date(Calendar.getInstance().getTimeInMillis()));
+            preparedStatement.setString(5, "New");
+
+            preparedStatement.execute();
         }
         catch(SQLException exception) {System.out.println("Could not complete database operation!");}
     }
