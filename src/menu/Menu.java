@@ -1,28 +1,40 @@
 package menu;
 
+import models.Client;
+import models.Model;
+import models.Order;
+import models.Package;
+
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
-    private static Operation[] options = {
+    private static final Operation[] options = {
             //create methods
-            new AddOperation("Add new client", "add", "clients"),
-            new AddOperation("Create new package", "add", "packages"),
-            new AddOperation("Create new order", "add", "orders"),
+            new Operation("Add new client", "add", Client.class),
+            new Operation("Create new package", "add", Package.class),
+            new Operation("Create new order", "add", Order.class),
             //list methods
-            new ListOperation("List clients", "list", "clients"),
-            new ListOperation("List packages", "list", "packages"),
-            new ListOperation("List orders", "list", "orders"),
+            new Operation("List clients", "list", Client.class),
+            new Operation("List packages", "list", Package.class),
+            new Operation("List orders", "list", Order.class),
             //search methods
-            new FindOperation("Find clients", "find", "clients"),
-            new FindOperation("Find packages", "find", "packages"),
-            new FindOperation("Find orders", "find", "orders"),
+            new Operation("Find clients", "find", Client.class),
+            new Operation("Find packages", "find", Package.class),
+            new Operation("Find orders", "find", Order.class),
             //modify methods
-            new ModifyOperation("Send package", "modify", "packages"),
-            new ModifyOperation("Mark order as delivered", "modify", "orders")
+            new Operation("Send package", "modify", Package.class),
+            new Operation("Mark order as delivered", "modify", Order.class)
     };
 
-    public static void clearScreen() { //TODO: fix screen clearing
+    //TODO: fix screen clearing
+    public static void clearScreen() {
         try {
             final String os = System.getProperty("os.name");
             if (os.contains("Windows")) {
@@ -49,6 +61,31 @@ public class Menu {
             System.out.println(String.format("%d. %s", i + 1, options[i].menuEntryText));
         }
 
-        readUserInput();
+        int chosenOption = Integer.parseInt(readUserInput()) - 1;
+        options[chosenOption].choose();
+    }
+
+    //TODO: naprawić funkcjonalność poniższej funkcji
+    public static void queryUserForData(Operation operation, Field[] fields) {
+        try {
+            String modelClassName = operation.modelClass.getName();
+            Class<?> aClass = Class.forName(modelClassName);
+            Constructor<?> constructor = aClass.getConstructor(String.class, String.class, String.class, String.class, String.class);
+
+            Object[] fieldValues = new Object[fields.length];
+            for (int i = 0; i < fields.length; i++) {
+                Field field = fields[i];
+                System.out.println(String.format("Wprowadź wartość dla atrybutu '%s'", field.getName()));
+                field.set(new Object(), readUserInput());
+                fieldValues[i] = field.get(field);
+            }
+            System.out.println("DEBUG: " + fieldValues[0]);
+
+            Object object = constructor.newInstance(fieldValues);
+        }
+        catch(ClassNotFoundException exception) {System.out.println("Could not find specified class!\n" + exception.getMessage());}
+        catch(NoSuchMethodException exception) {System.out.println("Could not find specified method!\n" + exception.getMessage());}
+        catch(InstantiationException | InvocationTargetException exception) {System.out.println("Problem occured while instantiating object!\n" + exception.getMessage());}
+        catch(IllegalAccessException exception) {System.out.println("A problem occured while querying for data!\n" + exception.getMessage());}
     }
 }

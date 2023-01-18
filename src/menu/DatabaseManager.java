@@ -83,52 +83,13 @@ public class DatabaseManager {
         catch(IllegalAccessException exception) {System.out.println("Could not get object's field values!\n" + exception.getMessage());}
     }
 
-    //TODO: create more methods for operations (list, find, modify, etc.)
-//    public static void createNewClient(String firstName, String lastName, String phoneNumber, String email, String address) {
-//        try {
-//            int id = getNextId("clients");
-//            String query = "insert into clients values(?, ?, ?, ?, ?, ?)";
-//            PreparedStatement preparedStatement = connection.prepareStatement(query);
-//
-//            preparedStatement.setInt(1, id);
-//            preparedStatement.setString(2, firstName);
-//            preparedStatement.setString(3, lastName);
-//            preparedStatement.setString(4, phoneNumber);
-//            preparedStatement.setString(5, email);
-//            preparedStatement.setString(6, address);
-//
-//            preparedStatement.execute();
-//        }
-//        catch(SQLException exception) {System.out.println("Could not complete database operation!");}
-//    }
-//    public static void createNewPackage(double weight, String contents) {
-//        try {
-//            int id = getNextId("packages");
-//            String query = "insert into packages values(?, ?, ?)";
-//            PreparedStatement preparedStatement = connection.prepareStatement(query);
-//
-//            preparedStatement.setInt(1, id);
-//            preparedStatement.setDouble(2, weight);
-//            preparedStatement.setString(3, contents);
-//
-//            preparedStatement.execute();
-//        }
-//        catch(SQLException exception) {System.out.println("Could not complete database operation!");}
-//    }
-//    public void createNewOrder(double price, String address) {
-//        try {
-//            int id = getNextId("orders");
-//            String query = "insert into orders values(?, ?, ?, ?, ?)";
-//            PreparedStatement preparedStatement = connection.prepareStatement(query);
-//
-//            preparedStatement.setInt(1, id);
-//            preparedStatement.setDouble(2, price);
-//            preparedStatement.setString(3, address);
-//            preparedStatement.setDate(4, new Date(Calendar.getInstance().getTimeInMillis()));
-//            preparedStatement.setString(5, "New");
-//
-//            preparedStatement.execute();
-//        }
-//        catch(SQLException exception) {System.out.println("Could not complete database operation!");}
-//    }
+    public static String list(String tableName) {
+        try {
+            String query = String.format("select * from %s", tableName);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            return preparedStatement.executeQuery().toString();
+        }
+        catch(SQLException exception) {System.out.println("Could not complete database operation!\n" + exception.getMessage());}
+        return null;
+    }
 }
