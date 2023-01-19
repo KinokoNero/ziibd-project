@@ -1,6 +1,6 @@
 package models;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Order extends Model {
     public Order(double price, String address, Date orderDate, String status) {

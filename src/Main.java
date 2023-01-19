@@ -2,7 +2,7 @@ import menu.*;
 
 public class Main {
     public static void main(String[] args) {
+        DatabaseManager.init();
         Menu.displayMainMenu();
-        //TODO: add appropriate methods for all operation types
     }
 }
