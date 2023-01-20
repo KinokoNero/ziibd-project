@@ -1,5 +1,7 @@
 package menu;
 
+import dict.Dictionary;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -60,13 +62,25 @@ public class DatabaseManager {
             int id = getNextId(tableName);
 
             //build query
-            StringBuilder query = new StringBuilder(String.format("insert into %s values(%d,", tableName, id));
+            StringBuilder query = new StringBuilder(String.format("insert into %s(", tableName));
+            //build column list
+            for (Object dat : data) {
+                query.append(); //TODO: znaleźć sposób na wpisanie listy kolumn do zapytania sql
+            }
+            query.deleteCharAt(query.length() - 1); //shave off last comma
+            query.append(")"); //close query column list
+
+            query.append(" values(");
+
             for (Object singleData : data) {
-                if (singleData.getClass() == String.class || singleData.getClass() == java.util.Date.class)
+                if (singleData.getClass() == String.class)
                     query.append(String.format("'%s',", singleData));
+                else if (singleData.getClass() == Date.class)
+                    query.append(String.format("to_date('%s', 'yyyy-mm-dd'),", singleData));
                 else
                     query.append(String.format("%s,", singleData));
             }
+
             query.deleteCharAt(query.length() - 1); //shave off last comma
             query.append(")"); //close query value list
 

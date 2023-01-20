@@ -1,5 +1,6 @@
 package menu;
 
+import dict.Dictionary;
 import models.Client;
 import models.Order;
 import models.Package;
@@ -7,14 +8,18 @@ import models.Package;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.Date;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Scanner;
 
 public class Menu {
     private static final Operation[] options = {
             //create methods
             new AddOperation("Add new client", Client.class),
-            new AddOperation("Create new package", Package.class),
             new AddOperation("Create new order", Order.class),
+            new AddOperation("Create new package", Package.class),
+
             //list methods
             new ListOperation("List clients", Client.class),
             new ListOperation("List packages", Package.class),
@@ -52,13 +57,26 @@ public class Menu {
     }
 
     public static Object[] queryUserForData(Field[] fields) {
-        Object[] values = new String[fields.length];
-        for (int i = 0; i < fields.length; i++) {
-            //TODO: Tutaj dodać warunek: gdy bieżące pole jest typu Date żeby automatycznie ustawiało dzisiejszą datę
-            System.out.printf("Wprowadź wartość dla atrybutu '%s'%n", fields[i].getName());
-            values[i] = Menu.readUserInput();
+        try {
+            Object[] values = new Object[fields.length];
+            for (int i = 0; i < fields.length; i++) {
+                if (fields[i].getType() == Date.class) {
+                    values[i] = new Date(Calendar.getInstance().getTimeInMillis());
+                    continue;
+                }
+
+                System.out.printf("Wprowadź wartość dla atrybutu '%s'%n", Dictionary.getDisplayName(fields[i].getName()));
+                values[i] = Menu.readUserInput();
+
+                //parse if number
+                if (fields[i].getType() == int.class || fields[i].getType() == double.class) {
+                    values[i] = NumberFormat.getInstance().parse((String) values[i]);
+                }
+            }
+            return values;
         }
-        return values;
+        catch(ParseException exception) {System.err.println("Problem occured while parsing user input!\n" + exception.getMessage());}
+        return new Object[0];
     }
 
     public static void displayMainMenu() {
