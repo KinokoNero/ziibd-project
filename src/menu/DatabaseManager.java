@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
+import java.util.Arrays;
 import java.util.Properties;
 
 public class DatabaseManager {
@@ -57,15 +58,15 @@ public class DatabaseManager {
 
     private static Connection connection;
 
-    public static void insert(String tableName, Object[] data) {
+    public static void insert(String tableName, String[] columnNames, Object[] data) {
         try {
-            int id = getNextId(tableName);
+            data[Arrays.stream(columnNames).toList().indexOf("id")] = getNextId(tableName); //overwrite default id of 0 with next available number in this table
 
             //build query
             StringBuilder query = new StringBuilder(String.format("insert into %s(", tableName));
             //build column list
-            for (Object dat : data) {
-                query.append(); //TODO: znaleźć sposób na wpisanie listy kolumn do zapytania sql
+            for (String columnName : columnNames) {
+                query.append(String.format("%s,", columnName));
             }
             query.deleteCharAt(query.length() - 1); //shave off last comma
             query.append(")"); //close query column list

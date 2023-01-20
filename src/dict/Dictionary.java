@@ -7,13 +7,15 @@ import java.util.Objects;
 
 public class Dictionary {
     private static final ArrayList<DictionaryEntry> dictionary = new ArrayList<>(List.of(
+            new DictionaryEntry("id", "id", "identyfikator"),
+
             new DictionaryEntry("firstName", "first_name", "imię"),
             new DictionaryEntry("lastName", "last_name", "nazwisko"),
-            new DictionaryEntry("phoneNumber", "phone_number", "imię"),
+            new DictionaryEntry("phoneNumber", "phone_number", "numer telefonu"),
             new DictionaryEntry("email", "email", "email"),
             new DictionaryEntry("address", "address", "adres"),
 
-            new DictionaryEntry("clientId", "clients_id", "identyfikator klienta"),
+            new DictionaryEntry("clientId", "client_id", "identyfikator klienta"),
             new DictionaryEntry("price", "price", "cena"),
             new DictionaryEntry("orderDate", "order_date", "data zamówienia"),
             new DictionaryEntry("status", "status", "status"),

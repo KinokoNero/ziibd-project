@@ -7,6 +7,6 @@ public class ListOperation extends Operation {
 
     @Override
     public void execute() {
-        System.out.println(DatabaseManager.list(this.tableName));
+        System.out.println(DatabaseManager.list(this.tableName)); //TODO: zająć się wyświetlaniem listy wszystkich rekordów z danej tablicy
     }
 }

@@ -16,21 +16,20 @@ import java.util.Scanner;
 public class Menu {
     private static final Operation[] options = {
             //create methods
-            new AddOperation("Add new client", Client.class),
-            new AddOperation("Create new order", Order.class),
-            new AddOperation("Create new package", Package.class),
+            new AddOperation("Dodaj nowego klienta", Client.class),
+            new AddOperation("Stwórz nowe zamówienie", Order.class),
+            new AddOperation("Stwórz nową paczkę", Package.class),
 
             //list methods
-            new ListOperation("List clients", Client.class),
-            new ListOperation("List packages", Package.class),
-            new ListOperation("List orders", Order.class),
+            new ListOperation("Wyświetl wszystkich klientów", Client.class),
+            new ListOperation("Wyświetl wszystkie zamówienia", Order.class),
+            new ListOperation("Wyświetl wszystkie paczki", Package.class),
             //search methods
-//            new FindOperation("Find clients", Client.class),
-//            new FindOperation("Find packages", Package.class),
-//            new FindOperation("Find orders", Order.class),
+//            new FindOperation("Wyszukaj klienta", Client.class),
+//            new FindOperation("Wyszukaj paczkę", Package.class),
+//            new FindOperation("Wyszukaj zamówienie", Order.class),
 //            //modify methods
-//            new ModifyOperation("Send package", Package.class),
-//            new ModifyOperation("Mark order as delivered", Order.class)
+//            new ModifyOperation("Zmień status zamówienia", Order.class)
     };
 
     //TODO: fix screen clearing
@@ -60,6 +59,10 @@ public class Menu {
         try {
             Object[] values = new Object[fields.length];
             for (int i = 0; i < fields.length; i++) {
+                if(fields[i].getName().equals("id")) {
+                    values[i] = 0;
+                    continue;
+                }
                 if (fields[i].getType() == Date.class) {
                     values[i] = new Date(Calendar.getInstance().getTimeInMillis());
                     continue;

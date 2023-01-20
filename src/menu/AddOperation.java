@@ -8,6 +8,6 @@ public class AddOperation extends Operation {
     @Override
     public void execute() {
         Object[] data = Menu.queryUserForData(this.modelClass.getFields());
-        DatabaseManager.insert(this.tableName, data);
+        DatabaseManager.insert(this.tableName, translateFieldToColumns(this.modelFields), data);
     }
 }
