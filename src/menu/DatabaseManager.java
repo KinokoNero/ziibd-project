@@ -67,9 +67,6 @@ public class DatabaseManager {
         catch(SQLException exception) {System.err.println("Could not complete database operation!\n" + exception.getMessage());}
         return null;
     }
-    public static void printQueryResult(ResultSet queryResult) {
-        //TODO: add body
-    }
 
     public static void insert(String tableName, String[] columnNames, Object[] data) {
         int id = getNextId(tableName);

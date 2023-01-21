@@ -16,7 +16,7 @@ public class FindOperation extends Operation {
     public void execute() {
         Field[] searchColumn = Menu.queryUserForColumn(this.modelFields);
         Object[] searchValue = Menu.queryUserForData(searchColumn);
-        ResultSet result = DatabaseManager.find(this.tableName, Dictionary.getColumnName(searchColumn[0].getName()), searchValue[0]);
-        DatabaseManager.printQueryResult(result);
+        ResultSet result = DatabaseManager.find(this.tableName, Dictionary.getColumnNameFromFieldName(searchColumn[0].getName()), searchValue[0]);
+        Menu.printQueryResult(result);
     }
 }

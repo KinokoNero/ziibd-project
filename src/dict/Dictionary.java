@@ -1,6 +1,5 @@
 package dict;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,20 +24,29 @@ public class Dictionary {
             new DictionaryEntry("contents", "contents", "zawartość")
     ));
 
-    public static String getColumnName(String fieldName) {
+    public static String getColumnNameFromFieldName(String fieldName) {
 
         return dictionary
                 .stream()
                 .filter(dictionaryEntry -> Objects.equals(dictionaryEntry.fieldName, fieldName))
                 .findFirst()
                 .get()
-                .databaseColumnName;
+                .columnName;
     }
 
-    public static String getDisplayName(String fieldName) {
+    public static String getDisplayNameFromFieldName(String fieldName) {
         return dictionary
                 .stream()
                 .filter(dictionaryEntry -> Objects.equals(dictionaryEntry.fieldName, fieldName))
+                .findFirst()
+                .get()
+                .displayName;
+    }
+
+    public static String getDisplayNameFromColumnName(String columnName) {
+        return dictionary
+                .stream()
+                .filter(dictionaryEntry -> Objects.equals(dictionaryEntry.columnName, columnName))
                 .findFirst()
                 .get()
                 .displayName;

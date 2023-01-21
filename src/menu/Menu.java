@@ -8,6 +8,9 @@ import operations.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Scanner;
@@ -20,22 +23,21 @@ public class Menu {
             new AddOperation("Dodaj nowego klienta", Client.class),
             new AddOperation("Stwórz nowe zamówienie", Order.class),
             new AddOperation("Stwórz nową paczkę", Package.class),
-
             //list methods
             new ListOperation("Wyświetl wszystkich klientów", Client.class),
             new ListOperation("Wyświetl wszystkie zamówienia", Order.class), //TODO: fix list operations
             new ListOperation("Wyświetl wszystkie paczki", Package.class),
             //search methods
             new FindOperation("Wyszukaj klienta", Client.class),
-            new FindOperation("Wyszukaj paczkę", Package.class),
             new FindOperation("Wyszukaj zamówienie", Order.class),
-//            //modify methods
+            new FindOperation("Wyszukaj paczkę", Package.class),
+            //modify methods
 //            new ModifyOperation("Zmień status zamówienia", Order.class)
             //delete methods
             new DeleteOperation("Usuń klienta", Client.class),
             new DeleteOperation("Usuń zamówienie", Order.class),
             new DeleteOperation("Usuń paczkę", Package.class),
-
+            //exit method
             new ExitOperation("Zamknij aplikację")
     };
 
@@ -66,7 +68,7 @@ public class Menu {
         try {
             Object[] values = new Object[fields.length];
             for (int i = 0; i < fields.length; i++) {
-                System.out.printf("Wprowadź wartość dla atrybutu '%s'%n", Dictionary.getDisplayName(fields[i].getName()));
+                System.out.printf("Wprowadź wartość dla atrybutu '%s'%n", Dictionary.getDisplayNameFromFieldName(fields[i].getName()));
                 values[i] = Menu.readUserInput();
 
                 //parse if number
@@ -83,10 +85,31 @@ public class Menu {
     public static Field[] queryUserForColumn(Field[] fields) {
         System.out.println("Wybierz właściwość po której wyszukać:");
         for (int i = 0; i < fields.length; i++) {
-            System.out.println(String.format("%d. %s", i, Dictionary.getDisplayName(fields[i].getName())));
+            System.out.println(String.format("%d. %s", i + 1, Dictionary.getDisplayNameFromFieldName(fields[i].getName())));
         }
         int option = Integer.parseInt(readUserInput());
-        return new Field[] {fields[option]};
+        return new Field[] {fields[option - 1]};
+    }
+
+    public static void printQueryResult(ResultSet queryResult) {
+        try {
+            ResultSetMetaData resultSetMetaData = queryResult.getMetaData();
+            int columnsNumber = resultSetMetaData.getColumnCount();
+
+            while(queryResult.next()) {
+                for (int i = 1; i < columnsNumber + 1; i++) {
+                    String columnName = Dictionary.getDisplayNameFromColumnName(resultSetMetaData.getColumnName(i).toLowerCase());
+                    String value = queryResult.getString(i);
+
+                    if (value.contains("00:00:00"))
+                        value = value.substring(0, 10);
+
+                    System.out.printf("%s: %s%n", columnName, value);
+                }
+                System.out.println();
+            }
+        }
+        catch(SQLException exception) {System.err.println("Could not print query result!\n" + exception.getMessage());}
     }
 
     public static void displayMainMenu() {

@@ -25,7 +25,7 @@ public abstract class Operation {
     public static String[] translateFieldToColumns(Field[] fields) {
         String[] columns = new String[fields.length];
         for (int i = 0; i < fields.length; i++) {
-            columns[i] = Dictionary.getColumnName(fields[i].getName());
+            columns[i] = Dictionary.getColumnNameFromFieldName(fields[i].getName());
         }
         return columns;
     }

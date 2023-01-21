@@ -1,6 +1,7 @@
 package operations;
 
 import menu.DatabaseManager;
+import menu.Menu;
 
 public class ListOperation extends Operation {
     public ListOperation(String menuEntryText, Class modelClass) {
@@ -9,6 +10,6 @@ public class ListOperation extends Operation {
 
     @Override
     public void execute() {
-        System.out.println(DatabaseManager.list(this.tableName)); //TODO: zająć się wyświetlaniem listy wszystkich rekordów z danej tablicy
+        Menu.printQueryResult(DatabaseManager.list(this.tableName));
     }
 }
