@@ -4,19 +4,18 @@ import dict.Dictionary;
 import models.Client;
 import models.Order;
 import models.Package;
+import operations.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.sql.Date;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Scanner;
 
 public class Menu {
     public static boolean pressedExit = false;
 
-    private static final Operation[] options = {
+    private static final Operation[] operations = {
             //create methods
             new AddOperation("Dodaj nowego klienta", Client.class),
             new AddOperation("Stwórz nowe zamówienie", Order.class),
@@ -24,12 +23,12 @@ public class Menu {
 
             //list methods
             new ListOperation("Wyświetl wszystkich klientów", Client.class),
-            new ListOperation("Wyświetl wszystkie zamówienia", Order.class),
+            new ListOperation("Wyświetl wszystkie zamówienia", Order.class), //TODO: fix list operations
             new ListOperation("Wyświetl wszystkie paczki", Package.class),
             //search methods
-//            new FindOperation("Wyszukaj klienta", Client.class),
-//            new FindOperation("Wyszukaj paczkę", Package.class),
-//            new FindOperation("Wyszukaj zamówienie", Order.class),
+            new FindOperation("Wyszukaj klienta", Client.class),
+            new FindOperation("Wyszukaj paczkę", Package.class),
+            new FindOperation("Wyszukaj zamówienie", Order.class),
 //            //modify methods
 //            new ModifyOperation("Zmień status zamówienia", Order.class)
             //delete methods
@@ -67,11 +66,6 @@ public class Menu {
         try {
             Object[] values = new Object[fields.length];
             for (int i = 0; i < fields.length; i++) {
-//                if (fields[i].getType() == Date.class) {
-//                    values[i] = new Date(Calendar.getInstance().getTimeInMillis());
-//                    continue;
-//                }
-
                 System.out.printf("Wprowadź wartość dla atrybutu '%s'%n", Dictionary.getDisplayName(fields[i].getName()));
                 values[i] = Menu.readUserInput();
 
@@ -86,12 +80,21 @@ public class Menu {
         return new Object[0];
     }
 
+    public static Field[] queryUserForColumn(Field[] fields) {
+        System.out.println("Wybierz właściwość po której wyszukać:");
+        for (int i = 0; i < fields.length; i++) {
+            System.out.println(String.format("%d. %s", i, Dictionary.getDisplayName(fields[i].getName())));
+        }
+        int option = Integer.parseInt(readUserInput());
+        return new Field[] {fields[option]};
+    }
+
     public static void displayMainMenu() {
-        for(int i = 0; i < options.length; i++) {
-            System.out.printf("%d. %s%n", i + 1, options[i].menuEntryText);
+        for(int i = 0; i < operations.length; i++) {
+            System.out.printf("%d. %s%n", i + 1, operations[i].menuEntryText);
         }
 
         int chosenOption = Integer.parseInt(readUserInput()) - 1;
-        options[chosenOption].execute();
+        operations[chosenOption].execute();
     }
 }

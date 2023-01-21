@@ -1,4 +1,6 @@
-package menu;
+package operations;
+
+import menu.DatabaseManager;
 
 public class ListOperation extends Operation {
     public ListOperation(String menuEntryText, Class modelClass) {

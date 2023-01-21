@@ -59,58 +59,66 @@ public class DatabaseManager {
 
     private static Connection connection;
 
-    public static void insert(String tableName, String[] columnNames, Object[] data) {
+    public static ResultSet executeQuery(String query) {
         try {
-            int id = getNextId(tableName);
-
-            //build query
-            StringBuilder query = new StringBuilder(String.format("insert into %s(id,", tableName));
-            //build column list
-            for (String columnName : columnNames) {
-                query.append(String.format("%s,", columnName));
-            }
-            query.deleteCharAt(query.length() - 1); //shave off last comma
-            query.append(")"); //close query column list
-
-            query.append(String.format(" values(%d,", id));
-
-            for (int i = 0; i < data.length; i++) {
-                if (columnNames[i].equals("order_date"))
-                    query.append(String.format("to_date('%s', 'yyyy-mm-dd'),", new Date(Calendar.getInstance().getTimeInMillis())));
-                if (data[i].getClass() == String.class)
-                    query.append(String.format("'%s',", data[i]));
-//                else if (data[i].getClass() == Date.class)
-//                    query.append(String.format("to_date('%s', 'yyyy-mm-dd'),", new Date(Calendar.getInstance().getTimeInMillis())));
-                else
-                    query.append(String.format("%s,", data[i]));
-            }
-
-            query.deleteCharAt(query.length() - 1); //shave off last comma
-            query.append(")"); //close query value list
-
-            //execute query
-            PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
-            preparedStatement.execute();
-        }
-        catch(SQLException exception) {System.err.println("Could not complete database operation!\n" + exception.getMessage());}
-    }
-
-    public static String list(String tableName) {
-        try {
-            String query = String.format("select * from %s", tableName);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            return preparedStatement.executeQuery().toString();
+            return preparedStatement.executeQuery();
         }
         catch(SQLException exception) {System.err.println("Could not complete database operation!\n" + exception.getMessage());}
         return null;
     }
+    public static void printQueryResult(ResultSet queryResult) {
+        //TODO: add body
+    }
+
+    public static void insert(String tableName, String[] columnNames, Object[] data) {
+        int id = getNextId(tableName);
+
+        //build query
+        StringBuilder query = new StringBuilder(String.format("insert into %s(id,", tableName));
+        //build column list
+        for (String columnName : columnNames) {
+            query.append(String.format("%s,", columnName));
+        }
+        query.deleteCharAt(query.length() - 1); //shave off last comma
+        query.append(")"); //close query column list
+
+        query.append(String.format(" values(%d,", id));
+
+        for (int i = 0; i < data.length; i++) {
+            if (columnNames[i].equals("order_date"))
+                query.append(String.format("to_date('%s', 'yyyy-mm-dd'),", new Date(Calendar.getInstance().getTimeInMillis())));
+            if (data[i].getClass() == String.class)
+                query.append(String.format("'%s',", data[i]));
+//                else if (data[i].getClass() == Date.class)
+//                    query.append(String.format("to_date('%s', 'yyyy-mm-dd'),", new Date(Calendar.getInstance().getTimeInMillis())));
+            else
+                query.append(String.format("%s,", data[i]));
+        }
+
+        query.deleteCharAt(query.length() - 1); //shave off last comma
+        query.append(")"); //close query value list
+
+        executeQuery(query.toString());
+    }
+
+    public static ResultSet list(String tableName) {
+        String query = String.format("select * from %s", tableName);
+        return executeQuery(query);
+    }
 
     public static void delete(String tableName, Object[] data) {
-        try {
-            String query = String.format("delete from %s where id=%d", tableName, data[0]);
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.execute();
-        }
-        catch(SQLException exception) {System.err.println("Could not complete database operation!\n" + exception.getMessage());}
+        String query = String.format("delete from %s where id=%d", tableName, data[0]);
+        executeQuery(query);
+    }
+
+    public static ResultSet find(String tableName, String searchColumn, Object searchValue) {
+        StringBuilder query = new StringBuilder(String.format("select * from %s where %s=", tableName, searchColumn));
+        if (searchValue.getClass() == Integer.class || searchValue.getClass() == Double.class)
+            query.append(searchValue);
+        else if (searchValue.getClass() == String.class)
+            query.append("'" + searchValue + "'");
+
+        return executeQuery(query.toString());
     }
 }

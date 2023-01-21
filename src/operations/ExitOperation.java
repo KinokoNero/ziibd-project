@@ -1,6 +1,6 @@
-package menu;
+package operations;
 
-import models.Model;
+import menu.Menu;
 
 public class ExitOperation extends Operation {
     public ExitOperation(String menuEntryText) {

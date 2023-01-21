@@ -1,10 +1,9 @@
-package menu;
+package operations;
 
 import dict.Dictionary;
 import models.Model;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 public abstract class Operation {
     public Operation(String menuEntryText, Class<Model> modelClass) {
