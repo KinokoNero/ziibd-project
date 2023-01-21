@@ -13,6 +13,9 @@ public abstract class Operation {
         this.modelFields = modelClass.getFields();
         this.tableName = modelClass.getSimpleName() + "s";
     }
+    public Operation(String menuEntryText) {
+        this.menuEntryText = menuEntryText;
+    }
 
     public abstract void execute();
     public String menuEntryText;

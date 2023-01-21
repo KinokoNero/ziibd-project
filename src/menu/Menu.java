@@ -14,6 +14,8 @@ import java.util.Calendar;
 import java.util.Scanner;
 
 public class Menu {
+    public static boolean pressedExit = false;
+
     private static final Operation[] options = {
             //create methods
             new AddOperation("Dodaj nowego klienta", Client.class),
@@ -30,6 +32,12 @@ public class Menu {
 //            new FindOperation("Wyszukaj zamówienie", Order.class),
 //            //modify methods
 //            new ModifyOperation("Zmień status zamówienia", Order.class)
+            //delete methods
+            new DeleteOperation("Usuń klienta", Client.class),
+            new DeleteOperation("Usuń zamówienie", Order.class),
+            new DeleteOperation("Usuń paczkę", Package.class),
+
+            new ExitOperation("Zamknij aplikację")
     };
 
     //TODO: fix screen clearing
@@ -59,14 +67,10 @@ public class Menu {
         try {
             Object[] values = new Object[fields.length];
             for (int i = 0; i < fields.length; i++) {
-                if(fields[i].getName().equals("id")) {
-                    values[i] = 0;
-                    continue;
-                }
-                if (fields[i].getType() == Date.class) {
-                    values[i] = new Date(Calendar.getInstance().getTimeInMillis());
-                    continue;
-                }
+//                if (fields[i].getType() == Date.class) {
+//                    values[i] = new Date(Calendar.getInstance().getTimeInMillis());
+//                    continue;
+//                }
 
                 System.out.printf("Wprowadź wartość dla atrybutu '%s'%n", Dictionary.getDisplayName(fields[i].getName()));
                 values[i] = Menu.readUserInput();

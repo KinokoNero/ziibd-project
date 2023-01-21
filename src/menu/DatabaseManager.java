@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Properties;
 
 public class DatabaseManager {
@@ -60,10 +61,10 @@ public class DatabaseManager {
 
     public static void insert(String tableName, String[] columnNames, Object[] data) {
         try {
-            data[Arrays.stream(columnNames).toList().indexOf("id")] = getNextId(tableName); //overwrite default id of 0 with next available number in this table
+            int id = getNextId(tableName);
 
             //build query
-            StringBuilder query = new StringBuilder(String.format("insert into %s(", tableName));
+            StringBuilder query = new StringBuilder(String.format("insert into %s(id,", tableName));
             //build column list
             for (String columnName : columnNames) {
                 query.append(String.format("%s,", columnName));
@@ -71,15 +72,17 @@ public class DatabaseManager {
             query.deleteCharAt(query.length() - 1); //shave off last comma
             query.append(")"); //close query column list
 
-            query.append(" values(");
+            query.append(String.format(" values(%d,", id));
 
-            for (Object singleData : data) {
-                if (singleData.getClass() == String.class)
-                    query.append(String.format("'%s',", singleData));
-                else if (singleData.getClass() == Date.class)
-                    query.append(String.format("to_date('%s', 'yyyy-mm-dd'),", singleData));
+            for (int i = 0; i < data.length; i++) {
+                if (columnNames[i].equals("order_date"))
+                    query.append(String.format("to_date('%s', 'yyyy-mm-dd'),", new Date(Calendar.getInstance().getTimeInMillis())));
+                if (data[i].getClass() == String.class)
+                    query.append(String.format("'%s',", data[i]));
+//                else if (data[i].getClass() == Date.class)
+//                    query.append(String.format("to_date('%s', 'yyyy-mm-dd'),", new Date(Calendar.getInstance().getTimeInMillis())));
                 else
-                    query.append(String.format("%s,", singleData));
+                    query.append(String.format("%s,", data[i]));
             }
 
             query.deleteCharAt(query.length() - 1); //shave off last comma
@@ -100,5 +103,14 @@ public class DatabaseManager {
         }
         catch(SQLException exception) {System.err.println("Could not complete database operation!\n" + exception.getMessage());}
         return null;
+    }
+
+    public static void delete(String tableName, Object[] data) {
+        try {
+            String query = String.format("delete from %s where id=%d", tableName, data[0]);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.execute();
+        }
+        catch(SQLException exception) {System.err.println("Could not complete database operation!\n" + exception.getMessage());}
     }
 }

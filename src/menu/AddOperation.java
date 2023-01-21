@@ -1,5 +1,8 @@
 package menu;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+
 public class AddOperation extends Operation {
     public AddOperation(String menuEntryText, Class modelClass) {
         super(menuEntryText, modelClass);
@@ -7,7 +10,9 @@ public class AddOperation extends Operation {
 
     @Override
     public void execute() {
-        Object[] data = Menu.queryUserForData(this.modelClass.getFields());
-        DatabaseManager.insert(this.tableName, translateFieldToColumns(this.modelFields), data);
+        Field[] insertFields = Arrays.stream(this.modelFields).filter(field -> !field.getName().equals("id")).toArray(Field[]::new);
+        Field[] queryFields = Arrays.stream(insertFields).filter(field -> !field.getName().equals("id") && !field.getName().equals("orderDate")).toArray(Field[]::new);
+        Object[] data = Menu.queryUserForData(queryFields);
+        DatabaseManager.insert(this.tableName, translateFieldToColumns(insertFields), data);
     }
 }
