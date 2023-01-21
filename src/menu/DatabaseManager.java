@@ -111,7 +111,7 @@ public class DatabaseManager {
 
     public static ResultSet find(String tableName, String searchColumn, Object searchValue) {
         StringBuilder query = new StringBuilder(String.format("select * from %s where %s=", tableName, searchColumn));
-        if (searchValue.getClass() == Integer.class || searchValue.getClass() == Double.class)
+        if (searchValue.getClass() == Long.class || searchValue.getClass() == Double.class)
             query.append(searchValue);
         else if (searchValue.getClass() == String.class)
             query.append("'" + searchValue + "'");

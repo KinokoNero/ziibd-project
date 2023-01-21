@@ -64,6 +64,10 @@ public class Menu {
         return scanner.nextLine();
     }
 
+    public static void validate(String input) {
+        //TODO: add body for validating user input
+    }
+
     public static Object[] queryUserForData(Field[] fields) {
         try {
             Object[] values = new Object[fields.length];
