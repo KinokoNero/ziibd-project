@@ -8,6 +8,7 @@ import operations.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -25,14 +26,16 @@ public class Menu {
             new AddOperation("Stwórz nową paczkę", Package.class),
             //list methods
             new ListOperation("Wyświetl wszystkich klientów", Client.class),
-            new ListOperation("Wyświetl wszystkie zamówienia", Order.class), //TODO: fix list operations
+            new ListOperation("Wyświetl wszystkie zamówienia", Order.class),
             new ListOperation("Wyświetl wszystkie paczki", Package.class),
             //search methods
             new FindOperation("Wyszukaj klienta", Client.class),
             new FindOperation("Wyszukaj zamówienie", Order.class),
             new FindOperation("Wyszukaj paczkę", Package.class),
             //modify methods
-//            new ModifyOperation("Zmień status zamówienia", Order.class)
+            new ModifyOperation("Zmień dane klienta", Client.class),
+            new ModifyOperation("Zmień dane zamówienia", Order.class),
+            new ModifyOperation("Zmień dane paczki", Package.class),
             //delete methods
             new DeleteOperation("Usuń klienta", Client.class),
             new DeleteOperation("Usuń zamówienie", Order.class),
@@ -59,13 +62,23 @@ public class Menu {
         catch(IOException | InterruptedException exception) {System.err.println("Problem occurred while trying to clear screen!\n" + exception.getMessage());}
     }
 
-    public static String readUserInput() {
+    public static String readUserInput(Type expectedInputType) {
         Scanner scanner = new Scanner(System.in);
-        return scanner.nextLine();
+        String input = scanner.nextLine();
+        validate(expectedInputType, input);
+        return input;
     }
 
-    public static void validate(String input) {
-        //TODO: add body for validating user input
+    public static void validate(Type expectedInputType, String input) {
+        try {
+            if (expectedInputType == int.class || expectedInputType == long.class)
+                Integer.parseInt(input);
+            else if (expectedInputType == double.class)
+                Double.parseDouble(input);
+        }
+        catch(NumberFormatException exception) {
+            System.err.println("Invalid value!\n" + exception.getMessage());
+        }
     }
 
     public static Object[] queryUserForData(Field[] fields) {
@@ -73,7 +86,7 @@ public class Menu {
             Object[] values = new Object[fields.length];
             for (int i = 0; i < fields.length; i++) {
                 System.out.printf("Wprowadź wartość dla atrybutu '%s'%n", Dictionary.getDisplayNameFromFieldName(fields[i].getName()));
-                values[i] = Menu.readUserInput();
+                values[i] = Menu.readUserInput(fields[i].getType());
 
                 //parse if number
                 if (fields[i].getType() == int.class || fields[i].getType() == double.class) {
@@ -87,11 +100,10 @@ public class Menu {
     }
 
     public static Field[] queryUserForColumn(Field[] fields) {
-        System.out.println("Wybierz właściwość po której wyszukać:");
         for (int i = 0; i < fields.length; i++) {
             System.out.println(String.format("%d. %s", i + 1, Dictionary.getDisplayNameFromFieldName(fields[i].getName())));
         }
-        int option = Integer.parseInt(readUserInput());
+        int option = Integer.parseInt(readUserInput(int.class));
         return new Field[] {fields[option - 1]};
     }
 
@@ -121,7 +133,7 @@ public class Menu {
             System.out.printf("%d. %s%n", i + 1, operations[i].menuEntryText);
         }
 
-        int chosenOption = Integer.parseInt(readUserInput()) - 1;
+        int chosenOption = Integer.parseInt(readUserInput(int.class)) - 1;
         operations[chosenOption].execute();
     }
 }

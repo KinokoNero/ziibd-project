@@ -14,6 +14,7 @@ public class FindOperation extends Operation {
 
     @Override
     public void execute() {
+        System.out.println("Wybierz właściwość po której wyszukać:");
         Field[] searchColumn = Menu.queryUserForColumn(this.modelFields);
         Object[] searchValue = Menu.queryUserForData(searchColumn);
         ResultSet result = DatabaseManager.find(this.tableName, Dictionary.getColumnNameFromFieldName(searchColumn[0].getName()), searchValue[0]);

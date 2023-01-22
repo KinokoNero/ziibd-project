@@ -100,13 +100,19 @@ public class DatabaseManager {
     }
 
     public static ResultSet list(String tableName) {
-        String query = String.format("select * from %s", tableName);
+        String query = String.format("select * from %s order by id", tableName);
         return executeQuery(query);
     }
 
-    public static void delete(String tableName, Object[] data) {
-        String query = String.format("delete from %s where id=%d", tableName, data[0]);
-        executeQuery(query);
+    public static void delete(String tableName, String searchColumn, Object searchValue) {
+        StringBuilder query = new StringBuilder(String.format("delete from %s where %s=", tableName, Dictionary.getColumnNameFromFieldName(searchColumn)));
+
+        if (searchValue.getClass() == Long.class || searchValue.getClass() == Double.class)
+            query.append(searchValue);
+        else
+            query.append(String.format("'%s'", searchValue));
+
+        executeQuery(query.toString());
     }
 
     public static ResultSet find(String tableName, String searchColumn, Object searchValue) {
@@ -116,6 +122,24 @@ public class DatabaseManager {
         else if (searchValue.getClass() == String.class)
             query.append("'" + searchValue + "'");
 
+        query.append(" order by id");
+
         return executeQuery(query.toString());
+    }
+
+    public static void modify(String tableName, String searchColumn, Object searchValue, String setColumn, Object newValue) {
+        StringBuilder query = new StringBuilder(String.format("update %s set %s=", tableName, setColumn));
+        if (newValue.getClass() == String.class)
+            query.append(String.format("'%s' ", newValue));
+        else if (newValue.getClass() == Double.class || newValue.getClass() == Long.class)
+            query.append(String.format("%d ", newValue));
+
+        query.append(String.format("where %s=", searchColumn));
+        if (searchValue.getClass() == String.class)
+            query.append(String.format("'%s' ", searchValue));
+        else if (searchValue.getClass() == Double.class || searchValue.getClass() == Long.class)
+            query.append(String.format("%d ", searchValue));
+
+        executeQuery(query.toString());
     }
 }
