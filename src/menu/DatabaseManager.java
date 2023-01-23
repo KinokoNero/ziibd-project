@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Properties;
 
@@ -88,8 +87,6 @@ public class DatabaseManager {
                 query.append(String.format("to_date('%s', 'yyyy-mm-dd'),", new Date(Calendar.getInstance().getTimeInMillis())));
             if (data[i].getClass() == String.class)
                 query.append(String.format("'%s',", data[i]));
-//                else if (data[i].getClass() == Date.class)
-//                    query.append(String.format("to_date('%s', 'yyyy-mm-dd'),", new Date(Calendar.getInstance().getTimeInMillis())));
             else
                 query.append(String.format("%s,", data[i]));
         }

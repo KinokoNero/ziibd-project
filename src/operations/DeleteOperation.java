@@ -4,7 +4,6 @@ import menu.DatabaseManager;
 import menu.Menu;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 public class DeleteOperation extends Operation {
     public DeleteOperation(String menuEntryText, Class modelClass) {

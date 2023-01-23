@@ -49,19 +49,14 @@ public class Menu {
             new ExitOperation("Zamknij aplikację")
     };
 
-    //TODO: fix screen clearing
     public static void clearScreen() {
         try {
             final String os = System.getProperty("os.name");
             if (os.contains("Windows")) {
-                ProcessBuilder processBuilder = new ProcessBuilder("cmd", "/c", "cls");
-                Process process = processBuilder.inheritIO().start();
-                process.waitFor();
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
             }
-            else if (os.contains("Linux")) {
-                ProcessBuilder processBuilder = new ProcessBuilder("bash", "clear");
-                Process process = processBuilder.inheritIO().start();
-                process.waitFor();
+            else {
+                new ProcessBuilder("clear").inheritIO().start().waitFor();
             }
         }
         catch(IOException | InterruptedException exception) {System.err.println("Problem occurred while trying to clear screen!\n" + exception.getMessage());}
@@ -86,9 +81,8 @@ public class Menu {
             else if (expectedInputType == Date.class)
                 LocalDate.parse(input);
         }
-        catch(NumberFormatException exception) {System.err.println("Invalid value type!\n" + exception.getMessage());}
-        catch (InvalidAttributeValueException | DateTimeParseException exception) {
-            System.err.println("Invalid input value!\n");
+        catch(NumberFormatException | InvalidAttributeValueException | DateTimeParseException exception) {
+            System.err.println("Invalid value type!\n" + exception.getMessage());
             error = true;
         }
     }
@@ -106,6 +100,8 @@ public class Menu {
                 if (fields[i].getType() == Date.class)
                     values[i] = LocalDate.parse((CharSequence) values[i]);
             }
+
+            clearScreen();
             return values;
         } catch (ParseException exception) {
             System.err.println("Problem occured while parsing user input!\n" + exception.getMessage());
@@ -119,6 +115,7 @@ public class Menu {
         }
         int option = Integer.parseInt(readUserInput(int.class));
         if (error) {return new Field[0];}
+        clearScreen();
         return new Field[] {fields[option - 1]};
     }
 
@@ -150,6 +147,7 @@ public class Menu {
             }
 
             int chosenOption = Integer.parseInt(readUserInput(int.class)) - 1;
+            clearScreen();
             operations[chosenOption].execute();
         }
         catch(ArrayIndexOutOfBoundsException | NumberFormatException exception) {System.err.println("Invalid operation number!\n");}
