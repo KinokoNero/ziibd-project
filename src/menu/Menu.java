@@ -6,18 +6,23 @@ import models.Order;
 import models.Package;
 import operations.*;
 
+import javax.management.InvalidAttributeValueException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class Menu {
     public static boolean pressedExit = false;
+    public static boolean error = false;
 
     private static final Operation[] operations = {
             //create methods
@@ -71,13 +76,20 @@ public class Menu {
 
     public static void validate(Type expectedInputType, String input) {
         try {
+            if (input == null || input.equals(""))
+                throw new InvalidAttributeValueException();
+
             if (expectedInputType == int.class || expectedInputType == long.class)
                 Integer.parseInt(input);
             else if (expectedInputType == double.class)
                 Double.parseDouble(input);
+            else if (expectedInputType == Date.class)
+                LocalDate.parse(input);
         }
-        catch(NumberFormatException exception) {
-            System.err.println("Invalid value!\n" + exception.getMessage());
+        catch(NumberFormatException exception) {System.err.println("Invalid value type!\n" + exception.getMessage());}
+        catch (InvalidAttributeValueException | DateTimeParseException exception) {
+            System.err.println("Invalid input value!\n");
+            error = true;
         }
     }
 
@@ -87,15 +99,17 @@ public class Menu {
             for (int i = 0; i < fields.length; i++) {
                 System.out.printf("Wprowadź wartość dla atrybutu '%s'%n", Dictionary.getDisplayNameFromFieldName(fields[i].getName()));
                 values[i] = Menu.readUserInput(fields[i].getType());
+                if (error) {return new Object[0];}
 
-                //parse if number
-                if (fields[i].getType() == int.class || fields[i].getType() == double.class) {
+                if (fields[i].getType() == int.class || fields[i].getType() == double.class)
                     values[i] = NumberFormat.getInstance().parse((String) values[i]);
-                }
+                if (fields[i].getType() == Date.class)
+                    values[i] = LocalDate.parse((CharSequence) values[i]);
             }
             return values;
+        } catch (ParseException exception) {
+            System.err.println("Problem occured while parsing user input!\n" + exception.getMessage());
         }
-        catch(ParseException exception) {System.err.println("Problem occured while parsing user input!\n" + exception.getMessage());}
         return new Object[0];
     }
 
@@ -104,6 +118,7 @@ public class Menu {
             System.out.println(String.format("%d. %s", i + 1, Dictionary.getDisplayNameFromFieldName(fields[i].getName())));
         }
         int option = Integer.parseInt(readUserInput(int.class));
+        if (error) {return new Field[0];}
         return new Field[] {fields[option - 1]};
     }
 
@@ -129,11 +144,14 @@ public class Menu {
     }
 
     public static void displayMainMenu() {
-        for(int i = 0; i < operations.length; i++) {
-            System.out.printf("%d. %s%n", i + 1, operations[i].menuEntryText);
-        }
+        try {
+            for (int i = 0; i < operations.length; i++) {
+                System.out.printf("%d. %s%n", i + 1, operations[i].menuEntryText);
+            }
 
-        int chosenOption = Integer.parseInt(readUserInput(int.class)) - 1;
-        operations[chosenOption].execute();
+            int chosenOption = Integer.parseInt(readUserInput(int.class)) - 1;
+            operations[chosenOption].execute();
+        }
+        catch(ArrayIndexOutOfBoundsException | NumberFormatException exception) {System.err.println("Invalid operation number!\n");}
     }
 }

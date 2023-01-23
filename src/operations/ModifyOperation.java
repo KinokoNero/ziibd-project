@@ -1,5 +1,6 @@
 package operations;
 
+import dict.Dictionary;
 import menu.DatabaseManager;
 import menu.Menu;
 import models.Model;
@@ -18,9 +19,11 @@ public class ModifyOperation extends Operation {
         System.out.println("Wybierz właściwość po której wyszukać element do zmiany:");
         Field[] searchColumn = Menu.queryUserForColumn(this.modelFields);
         Object[] searchValue = Menu.queryUserForData(searchColumn);
+        if (Menu.error) return;
         System.out.println("Wybierz właściwość którą chcesz zmienić:");
         Field[] setColumn = Menu.queryUserForColumn(setFields);
         Object[] newValue = Menu.queryUserForData(setColumn);
-        DatabaseManager.modify(this.tableName, searchColumn[0].getName(), searchValue[0], setColumn[0].getName(), newValue[0]);
+        if (Menu.error) return;
+        DatabaseManager.modify(this.tableName, Dictionary.getColumnNameFromFieldName(searchColumn[0].getName()), searchValue[0], Dictionary.getColumnNameFromFieldName(setColumn[0].getName()), newValue[0]);
     }
 }

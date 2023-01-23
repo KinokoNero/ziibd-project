@@ -6,6 +6,7 @@ public class Main {
 
         while (!Menu.pressedExit) {
             Menu.displayMainMenu();
+            Menu.error = false;
         }
     }
 }

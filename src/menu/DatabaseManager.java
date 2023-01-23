@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Properties;
@@ -109,6 +110,8 @@ public class DatabaseManager {
 
         if (searchValue.getClass() == Long.class || searchValue.getClass() == Double.class)
             query.append(searchValue);
+        else if (searchValue.getClass() == LocalDate.class)
+            query.append(String.format("to_date('%s', 'yyyy-mm-dd')", searchValue));
         else
             query.append(String.format("'%s'", searchValue));
 
@@ -133,8 +136,10 @@ public class DatabaseManager {
             query.append(String.format("'%s' ", newValue));
         else if (newValue.getClass() == Double.class || newValue.getClass() == Long.class)
             query.append(String.format("%d ", newValue));
+        else if (newValue.getClass() == LocalDate.class)
+            query.append(String.format("to_date('%s', 'yyyy-mm-dd')", newValue));
 
-        query.append(String.format("where %s=", searchColumn));
+        query.append(String.format(" where %s=", searchColumn));
         if (searchValue.getClass() == String.class)
             query.append(String.format("'%s' ", searchValue));
         else if (searchValue.getClass() == Double.class || searchValue.getClass() == Long.class)
