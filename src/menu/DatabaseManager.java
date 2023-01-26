@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Properties;
 
 public class DatabaseManager {
@@ -119,6 +120,8 @@ public class DatabaseManager {
         StringBuilder query = new StringBuilder(String.format("select * from %s where %s=", tableName, searchColumn));
         if (searchValue.getClass() == Long.class || searchValue.getClass() == Double.class)
             query.append(searchValue);
+        else if (searchValue.getClass() == LocalDate.class)
+            query.append(String.format("to_date('%s', 'yyyy-mm-dd')", searchValue));
         else if (searchValue.getClass() == String.class)
             query.append("'" + searchValue + "'");
 
@@ -131,16 +134,22 @@ public class DatabaseManager {
         StringBuilder query = new StringBuilder(String.format("update %s set %s=", tableName, setColumn));
         if (newValue.getClass() == String.class)
             query.append(String.format("'%s' ", newValue));
-        else if (newValue.getClass() == Double.class || newValue.getClass() == Long.class)
+        else if (newValue.getClass() == Long.class)
             query.append(String.format("%d ", newValue));
+        else if (newValue.getClass() == Double.class)
+            query.append(String.format("%f ", newValue));
         else if (newValue.getClass() == LocalDate.class)
             query.append(String.format("to_date('%s', 'yyyy-mm-dd')", newValue));
 
         query.append(String.format(" where %s=", searchColumn));
         if (searchValue.getClass() == String.class)
             query.append(String.format("'%s' ", searchValue));
-        else if (searchValue.getClass() == Double.class || searchValue.getClass() == Long.class)
+        else if (searchValue.getClass() == Long.class)
             query.append(String.format("%d ", searchValue));
+        else if (searchValue.getClass() == Double.class)
+            query.append(String.format("%f ", searchValue));
+        else if (searchValue.getClass() == LocalDate.class)
+            query.append(String.format("to_date('%s', 'yyyy-mm-dd')", searchValue));
 
         executeQuery(query.toString());
     }

@@ -49,18 +49,18 @@ public class Menu {
             new ExitOperation("Zamknij aplikację")
     };
 
-    public static void clearScreen() {
-        try {
-            final String os = System.getProperty("os.name");
-            if (os.contains("Windows")) {
-                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            }
-            else {
-                new ProcessBuilder("clear").inheritIO().start().waitFor();
-            }
-        }
-        catch(IOException | InterruptedException exception) {System.err.println("Problem occurred while trying to clear screen!\n" + exception.getMessage());}
-    }
+//    public static void clearScreen() {
+//        try {
+//            final String os = System.getProperty("os.name");
+//            if (os.contains("Windows")) {
+//                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+//            }
+//            else {
+//                new ProcessBuilder("clear").inheritIO().start().waitFor();
+//            }
+//        }
+//        catch(IOException | InterruptedException exception) {System.err.println("Problem occurred while trying to clear screen!\n" + exception.getMessage());}
+//    }
 
     public static String readUserInput(Type expectedInputType) {
         Scanner scanner = new Scanner(System.in);
@@ -101,7 +101,7 @@ public class Menu {
                     values[i] = LocalDate.parse((CharSequence) values[i]);
             }
 
-            clearScreen();
+//            clearScreen();
             return values;
         } catch (ParseException exception) {
             System.err.println("Problem occured while parsing user input!\n" + exception.getMessage());
@@ -115,7 +115,7 @@ public class Menu {
         }
         int option = Integer.parseInt(readUserInput(int.class));
         if (error) {return new Field[0];}
-        clearScreen();
+//        clearScreen();
         return new Field[] {fields[option - 1]};
     }
 
@@ -147,7 +147,7 @@ public class Menu {
             }
 
             int chosenOption = Integer.parseInt(readUserInput(int.class)) - 1;
-            clearScreen();
+//            clearScreen();
             operations[chosenOption].execute();
         }
         catch(ArrayIndexOutOfBoundsException | NumberFormatException exception) {System.err.println("Invalid operation number!\n");}
